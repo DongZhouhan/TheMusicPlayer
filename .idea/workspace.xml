@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fb3bc472-bdfd-49dc-84eb-e39e172a870f" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/TheMusicPlayer.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ClickableSlider.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LyricsManager.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MusicList.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MusicPlayer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PlayTask.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Song.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/re.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/img.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lyrics_img.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/untitled.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/untitled.ui" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2bRsjBJ9uNCfHtUWE05lIH6cFXb" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.main.executor": "Run",
+    "Python.q.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/17289/Desktop/py/TheMusicPlayer",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\17289\Desktop\py\TheMusicPlayer" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\17289\Desktop\py\TheMusicPlayer\src" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="TheMusicPlayer" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-50da183f06c8-2887949eec09-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.13135.95" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="fb3bc472-bdfd-49dc-84eb-e39e172a870f" name="更改" comment="" />
+      <created>1706189359612</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1706189359612</updated>
+      <workItem from="1706189363993" duration="11347000" />
+      <workItem from="1706202949577" duration="1985000" />
+      <workItem from="1706206220161" duration="1293000" />
+      <workItem from="1706240712074" duration="1247000" />
+      <workItem from="1706251167328" duration="16000" />
+      <workItem from="1706251211924" duration="60000" />
+      <workItem from="1706251547948" duration="4542000" />
+      <workItem from="1706256519389" duration="246000" />
+      <workItem from="1706274885120" duration="130000" />
+      <workItem from="1706275024892" duration="3614000" />
+      <workItem from="1706325583703" duration="831000" />
+      <workItem from="1706326719784" duration="617000" />
+      <workItem from="1706332555653" duration="2163000" />
+      <workItem from="1706348289634" duration="4347000" />
+      <workItem from="1706353796231" duration="1217000" />
+      <workItem from="1706405913536" duration="268000" />
+      <workItem from="1706447434356" duration="1884000" />
+      <workItem from="1706460590840" duration="3695000" />
+      <workItem from="1706464298064" duration="616000" />
+      <workItem from="1706464952941" duration="215000" />
+      <workItem from="1706504852000" duration="48000" />
+      <workItem from="1706504912717" duration="110000" />
+      <workItem from="1706505035003" duration="64000" />
+      <workItem from="1706505521711" duration="843000" />
+      <workItem from="1706511382336" duration="4795000" />
+      <workItem from="1706516654465" duration="662000" />
+      <workItem from="1706525985522" duration="219000" />
+      <workItem from="1706526311000" duration="1141000" />
+      <workItem from="1706586846931" duration="2000" />
+      <workItem from="1706672138390" duration="991000" />
+      <workItem from="1706934671068" duration="12257000" />
+      <workItem from="1707045745113" duration="530000" />
+      <workItem from="1707102692193" duration="574000" />
+      <workItem from="1707112404245" duration="1078000" />
+      <workItem from="1707113495346" duration="28000" />
+      <workItem from="1707131590427" duration="522000" />
+      <workItem from="1707134407722" duration="1874000" />
+      <workItem from="1707136356919" duration="30000" />
+      <workItem from="1707136878140" duration="674000" />
+      <workItem from="1707276570202" duration="1010000" />
+      <workItem from="1707277589192" duration="23000" />
+      <workItem from="1707277665455" duration="172000" />
+      <workItem from="1707277977485" duration="851000" />
+      <workItem from="1707285694937" duration="416000" />
+      <workItem from="1707286175213" duration="2899000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/TheMusicPlayer$main.coverage" NAME="main 覆盖结果" MODIFIED="1707046268991" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$q.coverage" NAME="q 覆盖结果" MODIFIED="1707134729234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_py$main.coverage" NAME="main 覆盖结果" MODIFIED="1707288361822" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TheMusicPlayer_$main.coverage" NAME="main 覆盖结果" MODIFIED="1706673093067" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
