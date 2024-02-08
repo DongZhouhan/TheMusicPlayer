@@ -46,7 +46,10 @@
        <item>
         <widget class="QLineEdit" name="FilterMusic">
          <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
+          <enum>Qt::ClickFocus</enum>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
