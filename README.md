@@ -1,7 +1,8 @@
 使用pyqt5,pygame制作的本地音乐播放器练手项目
 
 
-![image](https://github.com/DongZhouhan/TheMusicPlayer/assets/92138704/d3a963a7-92d7-4276-9b2c-ef5e587d9867)
+![image](https://github.com/DongZhouhan/TheMusicPlayer/assets/92138704/23a615b9-393e-446d-b096-0fa0b940299c)
+
 
 
 # TODO
