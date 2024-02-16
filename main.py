@@ -11,17 +11,20 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QMenu, QMess
 	QTableWidgetItem, QWidget
 
 from ClickableSlider import ClickableSlider
+from GlobalShortcuts import GlobalShortcuts
 from LyricsManager import LyricsManager
 from MusicList import MusicList
 from MusicPlayer import MusicPlayer
-from untitled import Ui_Form
+from untitled import Ui_form
 
 
 # 定义主页面类
-class MainPage(QWidget, Ui_Form):
+class MainPage(QWidget, Ui_form):
 	# 初始化函数
 	def __init__(self):
 		super().__init__()
+		self.pre_path = ''
+		self.start_position = 0
 		self.setupUi(self)
 		self.MusicList = MusicList()
 		self.music_player = MusicPlayer()
@@ -51,6 +54,8 @@ class MainPage(QWidget, Ui_Form):
 		self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 		self.SongLyrics.verticalScrollBar().valueChanged.connect(self.on_lyrics_scroll)
 		self.tableWidget.installEventFilter(self)
+		self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+		self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)  # 支持扩展选择（包括多选）
 
 	# 连接UI元素和相应的函数
 	def init_connect(self):
@@ -70,29 +75,30 @@ class MainPage(QWidget, Ui_Form):
 		self.SongProgressBar.sliderReleased.connect(self.on_slider_released)
 		self.SongProgressBar.valueChanged.connect(self.on_slider_moved)
 		self.LastSong.clicked.connect(self.previous_song)
-		self.ClearSearch_btn.clicked.connect(self.clear_search)
 		self.MusicMode_btn.clicked.connect(self.change_MusicMode)
 		self.SongLyrics.itemDoubleClicked.connect(self.on_lyric_double_clicked)
+		self.DeleteSong_btn.clicked.connect(self.delete_selected_songs)
 
 	# 初始化数据，如配置文件读取
 	def init_data(self):
-		data = self.read_data()
-		if data:
-			# self.folder_path = data.get('folder_path', None)
+		try:
+			data = self.read_data()
+
 			self.PlayMode = data.get('PlayMode', -1)
 			self.index = data.get('index', -1)
 			self.start_position = data.get('current_pos', 0)
-			self.MusicList.load_songs_from_db()
-			# if self.folder_path:
-			#     self.MusicList.load_songs_from_folder(self.folder_path)
-			#     # print(self.MusicList.songs)
-			#     self.search_song(self.FilterMusic.text())
-		if self.PlayMode == 0:
-			self.MusicMode_btn.setText('随机')
-		elif self.PlayMode == 1:
-			self.MusicMode_btn.setText('单曲')
-		else:
-			self.MusicMode_btn.setText('列表')
+			self.pre_path = data.get('pre_path', '')
+
+			self.MusicList.on_songs_loaded()
+
+			if self.PlayMode == 0:
+				self.MusicMode_btn.setText('随机')
+			elif self.PlayMode == 1:
+				self.MusicMode_btn.setText('单曲')
+			else:
+				self.MusicMode_btn.setText('列表')
+		except Exception as e:
+			print('init_data', e)
 
 	# 初始化系统托盘图标
 	def initTrayIcon(self):
@@ -136,37 +142,54 @@ class MainPage(QWidget, Ui_Form):
 
 	# 加载歌曲功能
 	def loadSongs(self):
-		"""提供选择加载单个文件、多个文件或文件夹的选项，并加载音乐"""
-		choice = QMessageBox.question(self, '加载音乐', '请选择加载方式：\n是：加载文件夹\n否：加载文件\n取消：取消操作',
-		                              QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel, QMessageBox.Cancel)
+		# 创建一个消息框实例
+		msgBox = QMessageBox()
+		msgBox.setIcon(QMessageBox.Question)
+		msgBox.setText("加载音乐")
+		msgBox.setInformativeText("请选择加载方式：")
+		msgBox.setWindowTitle("加载音乐")
 
-		if choice == QMessageBox.Yes:
+		# 添加按钮，设置角色并接收返回值
+		folderButton = msgBox.addButton("文件夹", QMessageBox.ActionRole)
+		fileButton = msgBox.addButton("文件", QMessageBox.ActionRole)
+		cancelButton = msgBox.addButton("取消", QMessageBox.RejectRole)
+
+		# 显示消息框
+		msgBox.exec_()
+
+		# 根据用户的选择执行操作
+		if msgBox.clickedButton() == folderButton:
 			# 用户选择加载文件夹
 			folder_path = QFileDialog.getExistingDirectory(self, "选择音乐文件夹")
 			if folder_path:
 				self.MusicList.load_songs_from_folder(folder_path, is_folder=True)
-		elif choice == QMessageBox.No:
+		elif msgBox.clickedButton() == fileButton:
 			# 用户选择加载单个或多个文件
 			file_paths, _ = QFileDialog.getOpenFileNames(self, "选择音乐文件", "", "音乐文件 (*.mp3 *.wav *.flac)")
 			if file_paths:
 				self.MusicList.load_songs_from_folder(file_paths, is_folder=False)
-
+		# 如果点击了取消按钮，不需要执行任何操作，因为操作已经被取消了
 		# 无论加载文件夹还是单个文件，都执行搜索以更新UI显示
 		self.search_song(self.FilterMusic.text())
 
 	# 当音乐列表更新时的处理逻辑
 	def on_music_list_updated(self, obj):
 		try:
-			self.load_songs_to_table()
+			# self.load_songs_to_table()
+			self.search_song(self.FilterMusic.text())
+			print(obj,self.index)
 			if obj == 100 and self.index != -1:
 				# print(self.MusicList.songs[self.index])
-				if self.index>=len(self.MusicList.songs):
+				print(1)
+				print(self.pre_path, self.MusicList.songs[self.index].path)
+				if self.index>=len(self.MusicList.songs) or self.pre_path != self.MusicList.songs[self.index].path:
 					self.index = -1
+					self.start_position=0
+
 				else:
 					self.play_song(self.MusicList.songs[self.index], self.start_position)
 					self.music_player.pause_song()
-				return
-			if obj == 100:
+			elif obj == 100 and self.index == -1 and self.MusicList.songs:
 				if self.PlayMode == 0:
 					self.random_play()
 				elif self.PlayMode == 1:
@@ -176,27 +199,25 @@ class MainPage(QWidget, Ui_Form):
 		except Exception as e:
 			print('on_music_list_updated', e)
 
-	# 将歌曲加载到表格的逻辑
-	def load_songs_to_table(self):
-		try:
-			self.search_song(self.FilterMusic.text())
-			self.tableWidget.setRowCount(len(self.MusicList.songs))
-			for row, song in enumerate(self.MusicList.songs):
-				print(f'{song.title} - {song.artist}')
-				self.tableWidget.setItem(row, 0, QTableWidgetItem(f'{song.title} - {song.artist}'))
-				mod_time_str = song.modification_time
-				self.tableWidget.setItem(row, 1, QTableWidgetItem(mod_time_str))
-		except Exception as e:
-			print('load_songs_to_table', e)
+	def delete_selected_songs(self):
+		# 获取所有选中的行，返回的是 QModelIndex 列表
+		selectedRows = set()  # 使用集合避免重复的行号
+		for index in self.tableWidget.selectionModel().selectedIndexes():
+			selectedRows.add(index.row())
+		# 对行号进行排序并逆序，确保从最后一个开始删除
+		for row in sorted(selectedRows, reverse=True):
+			self.delete_song(row)
 
-	def delete_song(self):
-		currentRow = self.tableWidget.currentRow()
+	def delete_song(self,currentRow=-1):
+		if currentRow == -1:
+			currentRow = self.tableWidget.currentRow()
 		if currentRow >= 0:
 			songPath = self.MusicList.songs[currentRow].path  # 假设每个歌曲对象都有一个路径属性
-			reply = QMessageBox.question(self, '确认删除', '你确定要删除这首歌吗？',
-			                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+			# reply = QMessageBox.question(self, '确认删除', '你确定要删除这首歌吗？',
+			#                              QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
-			if reply == QMessageBox.Yes:
+			# if reply == QMessageBox.Yes:
+			if True:
 				# 检查是否删除的是当前播放的歌曲
 				if self.index == currentRow:
 					self.music_player.stop_song()  # 停止当前歌曲的播放
@@ -370,9 +391,12 @@ class MainPage(QWidget, Ui_Form):
 				self.filtered_song_indices.append(index)
 				row_count = self.tableWidget.rowCount()
 				self.tableWidget.insertRow(row_count)
-				self.tableWidget.setItem(row_count, 0, QTableWidgetItem(f'{song.title} - {song.artist}'))
-				mod_time_str = song.modification_time
-				self.tableWidget.setItem(row_count, 1, QTableWidgetItem(mod_time_str))
+				item=QTableWidgetItem(song.title)
+				item.setTextAlignment(Qt.AlignCenter)
+				self.tableWidget.setItem(row_count, 0, item)
+				item = QTableWidgetItem(song.artist)
+				item.setTextAlignment(Qt.AlignCenter)
+				self.tableWidget.setItem(row_count, 1, item)
 
 	# 处理系统托盘图标的点击事件逻辑
 	def trayIconActivated(self, reason):
@@ -396,12 +420,12 @@ class MainPage(QWidget, Ui_Form):
 		data = {
 			'PlayMode': self.PlayMode,
 			'index': self.index,
-			'current_pos': self.get_current_pos()
+			'current_pos': self.get_current_pos(),
+			'pre_path':self.MusicList.songs[self.index].path
 		}
 		if self.folder_path:
 			data['folder_path'] = self.folder_path
 		self.write_data(data)
-		self.MusicList.close()
 		QApplication.quit()
 
 	# 用户按下进度条逻辑
@@ -448,10 +472,7 @@ class MainPage(QWidget, Ui_Form):
 	def get_current_pos(self):
 		return self.music_player.get_current_pos()
 
-	# 清除搜索逻辑
-	def clear_search(self):
-		self.FilterMusic.clear()
-		self.search_song('')
+
 
 	# 改变音乐播放模式逻辑
 	def change_MusicMode(self):
@@ -470,4 +491,10 @@ if __name__ == '__main__':
 	app.setStyle('Fusion')
 	window = MainPage()
 	window.show()
-	sys.exit(app.exec_())
+	# 创建并启动全局快捷键监听
+	shortcuts = GlobalShortcuts(window)
+	shortcuts.start()
+
+	exit_code = app.exec_()
+	shortcuts.stop()  # 停止全局快捷键监听
+	sys.exit(exit_code)

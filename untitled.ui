@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>form</class>
+ <widget class="QWidget" name="form">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -37,12 +37,12 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>打开</string>
+        <string>选择歌曲文件</string>
        </property>
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,1,1">
        <item>
         <widget class="QLineEdit" name="FilterMusic">
          <property name="focusPolicy">
@@ -54,19 +54,23 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="ClearSearch_btn">
+        <widget class="QComboBox" name="MusiList_box">
          <property name="font">
           <font>
-           <family>微软雅黑</family>
-           <pointsize>16</pointsize>
+           <pointsize>12</pointsize>
           </font>
          </property>
          <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
+          <enum>Qt::ClickFocus</enum>
          </property>
-         <property name="text">
-          <string>清除</string>
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
          </property>
+         <item>
+          <property name="text">
+           <string>播放列表1</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -81,8 +85,67 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>随机</string>
+          <string>随机播放</string>
          </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,0,0">
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="DeleteSong_btn">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
+         <property name="text">
+          <string>删除歌曲</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="DeleteMusicList_btn">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
+         <property name="text">
+          <string>删除播放列表</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="SortMode_box">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
+         <item>
+          <property name="text">
+           <string>默认</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>名字(升序)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>名字(降序)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>歌手</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -124,24 +187,12 @@
        </attribute>
        <column>
         <property name="text">
-         <string>名字</string>
-        </property>
-        <property name="font">
-         <font>
-          <family>微软雅黑</family>
-          <pointsize>10</pointsize>
-         </font>
+         <string>歌曲名</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>修改时间</string>
-        </property>
-        <property name="font">
-         <font>
-          <family>微软雅黑</family>
-          <pointsize>10</pointsize>
-         </font>
+         <string>歌手</string>
         </property>
        </column>
       </widget>
