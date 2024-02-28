@@ -5,12 +5,11 @@ import random
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QCoreApplication, QPropertyAnimation, QSize, QTimer, Qt, QEvent
-from PyQt5.QtGui import QColor, QFont, QIcon, QTextCursor
+from PyQt5.QtCore import QTimer, Qt, QEvent
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QMenu, QMessageBox, QSystemTrayIcon, \
 	QTableWidgetItem, QWidget
 
-from ClickableSlider import ClickableSlider
 from GlobalShortcuts import GlobalShortcuts
 from LyricsManager import LyricsManager
 from MusicList import MusicList
@@ -32,6 +31,7 @@ class MainPage(QWidget, Ui_form):
 		self.index = -1
 		self.folder_path = ''
 		self.lyrics_data = []  # 存储歌词数据
+		self.init_data_flag=True
 		self.user_is_interacting_with_lyrics = False  # 用户是否正在滑动歌词
 		# 初始化定时器
 		self.lyrics_scroll_timer = QTimer(self)
@@ -78,6 +78,8 @@ class MainPage(QWidget, Ui_form):
 		self.MusicMode_btn.clicked.connect(self.change_MusicMode)
 		self.SongLyrics.itemDoubleClicked.connect(self.on_lyric_double_clicked)
 		self.DeleteSong_btn.clicked.connect(self.delete_selected_songs)
+		self.DeleteMusicList_btn.clicked.connect(self.delete_music_list)
+		self.FindCurSong_btn.clicked.connect(self.highlight_playing_song)
 
 	# 初始化数据，如配置文件读取
 	def init_data(self):
@@ -175,18 +177,20 @@ class MainPage(QWidget, Ui_form):
 	# 当音乐列表更新时的处理逻辑
 	def on_music_list_updated(self, obj):
 		try:
+
 			# self.load_songs_to_table()
 			self.search_song(self.FilterMusic.text())
 			print(obj,self.index)
 			if obj == 100 and self.index != -1:
 				# print(self.MusicList.songs[self.index])
-				print(1)
+
 				print(self.pre_path, self.MusicList.songs[self.index].path)
-				if self.index>=len(self.MusicList.songs) or self.pre_path != self.MusicList.songs[self.index].path:
+
+				if not self.init_data_flag or self.index>=len(self.MusicList.songs) or self.pre_path != self.MusicList.songs[self.index].path:
 					self.index = -1
 					self.start_position=0
-
 				else:
+					self.init_data_flag=False
 					self.play_song(self.MusicList.songs[self.index], self.start_position)
 					self.music_player.pause_song()
 			elif obj == 100 and self.index == -1 and self.MusicList.songs:
@@ -207,37 +211,68 @@ class MainPage(QWidget, Ui_form):
 		# 对行号进行排序并逆序，确保从最后一个开始删除
 		for row in sorted(selectedRows, reverse=True):
 			self.delete_song(row)
+		self.search_song()
 
 	def delete_song(self,currentRow=-1):
-		if currentRow == -1:
-			currentRow = self.tableWidget.currentRow()
-		if currentRow >= 0:
-			songPath = self.MusicList.songs[currentRow].path  # 假设每个歌曲对象都有一个路径属性
-			# reply = QMessageBox.question(self, '确认删除', '你确定要删除这首歌吗？',
-			#                              QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+		try:
+			if currentRow == -1:
+				currentRow = self.tableWidget.currentRow()
+			if currentRow >= 0:
+				songPath = self.MusicList.songs[currentRow].path  # 假设每个歌曲对象都有一个路径属性
+				# reply = QMessageBox.question(self, '确认删除', '你确定要删除这首歌吗？',
+				#                              QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
-			# if reply == QMessageBox.Yes:
-			if True:
-				# 检查是否删除的是当前播放的歌曲
-				if self.index == currentRow:
-					self.music_player.stop_song()  # 停止当前歌曲的播放
-					self.MusicList.delete_song_by_path(songPath)  # 删除歌曲
-					self.tableWidget.removeRow(currentRow)
-					self.MusicList.songs.pop(currentRow)  # 也从内存中的歌曲列表中删除
+				# if reply == QMessageBox.Yes:
+				if True:
+					# 检查是否删除的是当前播放的歌曲
+					if self.index == currentRow:
+						self.music_player.stop_song()  # 停止当前歌曲的播放
+						self.MusicList.delete_song_by_path(songPath)  # 删除歌曲
+						self.tableWidget.removeRow(currentRow)
+						# self.MusicList.songs.pop(currentRow)  # 也从内存中的歌曲列表中删除
 
-					# 如果有其他歌曲，播放下一首；否则重置播放器状态
-					if len(self.MusicList.songs) > 0:
-						nextRow = currentRow if currentRow < len(self.MusicList.songs) else 0
-						self.play_song(self.MusicList.songs[nextRow])
+						# 如果有其他歌曲，播放下一首；否则重置播放器状态
+						if len(self.MusicList.songs) > 0:
+							nextRow = currentRow if currentRow < len(self.MusicList.songs) else 0
+							self.play_song(self.MusicList.songs[nextRow])
+						else:
+							# 重置播放器UI等
+							# self.reset_player_ui()
+							pass
 					else:
-						# 重置播放器UI等
-						# self.reset_player_ui()
-						pass
-				else:
-					# 如果删除的不是当前播放的歌曲，直接删除即可
-					self.MusicList.delete_song_by_path(songPath)  # 删除歌曲
-					self.tableWidget.removeRow(currentRow)
-					self.MusicList.songs.pop(currentRow)  # 也从内存中的歌曲列表中删除
+						# 如果删除的不是当前播放的歌曲，直接删除即可
+						# print(len(self.MusicList.songs),len(self.filtered_song_indices),currentRow)
+
+						self.MusicList.delete_song_by_path(songPath)  # 删除歌曲
+						self.tableWidget.removeRow(currentRow)
+						# self.MusicList.songs.pop(currentRow)  # 也从内存中的歌曲列表中删除
+						# print(len(self.MusicList.songs),len(self.filtered_song_indices))
+
+		except Exception as e:
+			print('delete_song', e)
+
+	def delete_music_list(self):
+		try:
+			self.MusicList.delete_music_list()
+			self.MusicTitle.clear()
+			self.SongLyrics.clear()
+			self.SongProgressBar.setValue(0)
+			self.music_player.stop_song()
+		except Exception as e:
+			print('delete_music_list', e)
+
+	def highlight_playing_song(self):
+		if self.index in self.filtered_song_indices:
+			row_to_select = self.filtered_song_indices.index(self.index)
+			self.tableWidget.setCurrentCell(row_to_select, 0)  # 选中对应的行和第一列
+
+			# 获取当前选中行的QModelIndex
+			model_index = self.tableWidget.model().index(row_to_select, 0)
+
+			# 滚动到该QModelIndex，确保它在视图中间
+			self.tableWidget.scrollTo(model_index, QtWidgets.QAbstractItemView.PositionAtCenter)
+		else:
+			print("当前播放的歌曲不在过滤后的列表中")
 
 	# 随机播放音乐
 	def random_play(self):
@@ -383,20 +418,23 @@ class MainPage(QWidget, Ui_form):
 
 	# 搜索音乐逻辑
 	def search_song(self, search_text):
-		self.filtered_song_indices.clear()
+		try:
+			self.filtered_song_indices.clear()
 
-		self.tableWidget.setRowCount(0)
-		for index, song in enumerate(self.MusicList.songs):
-			if search_text.lower() in song.title.lower():
-				self.filtered_song_indices.append(index)
-				row_count = self.tableWidget.rowCount()
-				self.tableWidget.insertRow(row_count)
-				item=QTableWidgetItem(song.title)
-				item.setTextAlignment(Qt.AlignCenter)
-				self.tableWidget.setItem(row_count, 0, item)
-				item = QTableWidgetItem(song.artist)
-				item.setTextAlignment(Qt.AlignCenter)
-				self.tableWidget.setItem(row_count, 1, item)
+			self.tableWidget.setRowCount(0)
+			for index, song in enumerate(self.MusicList.songs):
+				if search_text.lower() in song.title.lower():
+					self.filtered_song_indices.append(index)
+					row_count = self.tableWidget.rowCount()
+					self.tableWidget.insertRow(row_count)
+					item=QTableWidgetItem(song.title)
+					item.setTextAlignment(Qt.AlignCenter)
+					self.tableWidget.setItem(row_count, 0, item)
+					item = QTableWidgetItem(song.artist)
+					item.setTextAlignment(Qt.AlignCenter)
+					self.tableWidget.setItem(row_count, 1, item)
+		except Exception as e:
+			print('search_song', e)
 
 	# 处理系统托盘图标的点击事件逻辑
 	def trayIconActivated(self, reason):

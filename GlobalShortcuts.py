@@ -3,8 +3,8 @@ import keyboard
 class GlobalShortcuts:
     def __init__(self, main_page):
         self.main_page = main_page
-        keyboard.add_hotkey('left', self.on_previous_song)
-        keyboard.add_hotkey('right', self.on_next_song)
+        keyboard.add_hotkey('page up', self.on_previous_song)
+        keyboard.add_hotkey('page down', self.on_next_song)
         keyboard.add_hotkey('up', self.on_volume_up)
         keyboard.add_hotkey('down', self.on_volume_down)
 

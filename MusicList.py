@@ -80,7 +80,14 @@ class MusicList(QObject):
     def process_single_file(self, file_path):
         """处理单个文件的加载"""
         song_metadata = self.get_song_metadata(file_path)
-        title, artist = song_metadata if song_metadata else self.parse_file_name(os.path.basename(file_path))
+
+        # 检查元数据是否存在且有效
+        if song_metadata and not (song_metadata[0] in [None, "未知歌手"] or song_metadata[1] in [None, "未知歌手"]):
+            title, artist = song_metadata
+        else:
+            # 如果元数据不存在或不完整，从文件名解析
+            title, artist = self.parse_file_name(os.path.basename(file_path))
+
         mod_time = os.path.getmtime(file_path)
         normalized_path = os.path.normpath(file_path)
         song = Song(title=title, artist=artist, modification_time=mod_time, path=normalized_path)
@@ -102,12 +109,23 @@ class MusicList(QObject):
             conn.commit()
             self.songs = [song for song in self.songs if song.path != song_path]
             self.updated.emit('删除单曲')
+    def delete_music_list(self):
+        try:
+            """删除数据库中的所有歌曲，并更新内存中的列表"""
+            with sqlite3.connect('music_library.sqlite') as conn:
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM songs")
+                conn.commit()
+                self.songs = []
+                self.updated.emit('删除所有歌曲')
+        except Exception as e:
+            print(f"删除音乐列表时出错: {e}")
 
     def parse_file_name(self, file_name):
         """从文件名解析歌名和艺术家"""
         file_name_without_extension = os.path.splitext(file_name)[0]
-        parts = file_name_without_extension.split(' - ', 1)
-        return (parts[0], parts[1]) if len(parts) > 1 else (file_name_without_extension, '未知歌手')
+        parts = file_name_without_extension.split('-', 1)
+        return (parts[0].strip(), parts[1].strip()) if len(parts) > 1 else (file_name_without_extension, '未知歌手')
 
     def get_song_metadata(self, file_path):
         """尝试从音乐文件的元数据中读取歌曲信息"""
@@ -118,8 +136,8 @@ class MusicList(QObject):
                 audio = FLAC(file_path)
             else:
                 return None
-            title = audio['title'][0] if 'title' in audio else os.path.splitext(os.path.basename(file_path))[0]
-            artist = audio['artist'][0] if 'artist' in audio else '未知歌手'
+            title = audio['title'][0] if 'title' in audio else None
+            artist = audio['artist'][0] if 'artist' in audio else None
             return title, artist
         except Exception as e:
             print(f"读取音乐文件元数据时出错: {e}")
