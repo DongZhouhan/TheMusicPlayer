@@ -1,6 +1,8 @@
 import pygame
 from PyQt5.QtCore import QObject, QThread, QMutex, pyqtSignal
-from PlayTask import PlayTask
+
+from PlayTask import PlayTask  # 假设PlayTask类已定义
+
 
 class MusicPlayer(QObject):
     # 信号定义，用于更新播放状态和进度
@@ -14,11 +16,11 @@ class MusicPlayer(QObject):
         self.thread = None  # 线程用于播放音乐
         self.mutex = QMutex()  # 互斥锁保证线程安全
 
-    def play_song(self, song_path,start_position=0):
+    def play_song(self, song_path, start_position=0):
         self.mutex.lock()
         try:
             self._ensure_previous_task_stopped()
-            self._setup_new_play_task(song_path,start_position)
+            self._setup_new_play_task(song_path, start_position)
         except Exception as e:
             print(f"play_song: {e}")
         finally:
@@ -26,25 +28,35 @@ class MusicPlayer(QObject):
 
     def _ensure_previous_task_stopped(self):
         if self.play_task:
-            self.play_task.stop()
-            self._disconnect_play_task_signals()
-            self._wait_for_thread_to_finish()
-            self.play_task.deleteLater()
-            self.play_task = None
+            try:
+                self.play_task.stop()
+                self._disconnect_play_task_signals()
+                self._wait_for_thread_to_finish()
+                self.play_task.deleteLater()
+                self.play_task = None
+            except Exception as e:
+                print(f"_ensure_previous_task_stopped: {e}")
 
     def _disconnect_play_task_signals(self):
         # 断开与play_task相关的信号连接
-        self.play_task.finished.disconnect()
-        self.play_task.progressUpdated.disconnect()
+        if self.play_task:
+            try:
+                self.play_task.finished.disconnect()
+                self.play_task.progressUpdated.disconnect()
+            except Exception as e:
+                print(f"_disconnect_play_task_signals: {e}")
 
     def _wait_for_thread_to_finish(self):
         if self.thread:
-            self.thread.quit()
-            self.thread.wait()
-            self.thread = None
+            try:
+                self.thread.quit()
+                self.thread.wait()
+                self.thread = None
+            except Exception as e:
+                print(f"_wait_for_thread_to_finish: {e}")
 
-    def _setup_new_play_task(self, song_path,start_position=0):
-        self.play_task = PlayTask(song_path,start_position)
+    def _setup_new_play_task(self, song_path, start_position=0):
+        self.play_task = PlayTask(song_path, start_position)
         self.thread = QThread()
         self.play_task.moveToThread(self.thread)
 
@@ -62,7 +74,6 @@ class MusicPlayer(QObject):
     def on_progress_updated(self, progress_info):
         # 更新播放进度
         self.progressUpdated.emit(progress_info)
-
 
     def pause_song(self):
         if self.play_task:
@@ -105,6 +116,7 @@ class MusicPlayer(QObject):
                 self.play_task.setVolume(Volume)
             except Exception as e:
                 print(f"SetVolume: {e}")
+
     def get_total_duration(self):
         if self.play_task:
             try:
@@ -114,7 +126,10 @@ class MusicPlayer(QObject):
 
     def seek_to(self, time):
         if self.play_task:
-            self.play_task.seek_to(time)
+            try:
+                self.play_task.seek_to(time)
+            except Exception as e:
+                print(f"seek_to: {e}")
 
     def get_current_pos(self):
         if self.play_task:
