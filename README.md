@@ -1,8 +1,6 @@
     使用pyqt5,pygame制作的本地音乐播放器 pyhton练手项目
 
-
 ![image](https://github.com/DongZhouhan/TheMusicPlayer/assets/92138704/07ad5085-c84a-4f25-9b29-9c2c4b07383d)
-
 
 
 
