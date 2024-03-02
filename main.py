@@ -5,11 +5,12 @@ import random
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer, Qt, QEvent
+from PyQt5.QtCore import QEvent, QTimer, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QMenu, QMessageBox, QSystemTrayIcon, \
 	QTableWidgetItem, QWidget
 
+from AddSetting import SettingDialog
 from GlobalShortcuts import GlobalShortcuts
 from LyricsManager import LyricsManager
 from MusicList import MusicList
@@ -80,6 +81,8 @@ class MainPage(QWidget, Ui_form):
 		self.DeleteSong_btn.clicked.connect(self.delete_selected_songs)
 		self.DeleteMusicList_btn.clicked.connect(self.delete_music_list)
 		self.FindCurSong_btn.clicked.connect(self.highlight_playing_song)
+		# self.Additional_btn.clicked.connect(self.Additional_btn)
+		self.Additional_btn.clicked.connect(self.add_setting)
 
 	# 初始化数据，如配置文件读取
 	def init_data(self):
@@ -125,6 +128,29 @@ class MainPage(QWidget, Ui_form):
 			return True
 		return super().eventFilter(source, event)
 
+	def add_setting(self):
+		try:
+			self.setting_window = SettingDialog()
+			self.setting_window.show()
+			self.setting_window.save_signal.connect(self.save_setting)
+		except Exception as e:
+			print('add_setting', e)
+
+	def save_setting(self):
+		try:
+			# print(self.index)
+			if self.index >= len(self.MusicList.songs) or self.index == -1:
+				return
+			# self.music_player.pause_song()
+			cur_song = self.MusicList.songs[self.index]
+			current_pos = self.music_player.get_current_pos()
+			self.music_player.stop_song()
+			self.setting_window.sava_song_inf(self.MusicList.songs[self.index])
+			# self.music_player.unpause_song()
+			self.play_song(cur_song, current_pos)
+		except Exception as e:
+			print('save_setting', e)
+
 	# 从配置文件读取数据
 	def read_data(self):
 		try:
@@ -144,35 +170,38 @@ class MainPage(QWidget, Ui_form):
 
 	# 加载歌曲功能
 	def loadSongs(self):
-		# 创建一个消息框实例
-		msgBox = QMessageBox()
-		msgBox.setIcon(QMessageBox.Question)
-		msgBox.setText("加载音乐")
-		msgBox.setInformativeText("请选择加载方式：")
-		msgBox.setWindowTitle("加载音乐")
+		try:
+			# 创建一个消息框实例
+			msgBox = QMessageBox()
+			msgBox.setIcon(QMessageBox.Question)
+			msgBox.setText("加载音乐")
+			msgBox.setInformativeText("请选择加载方式：")
+			msgBox.setWindowTitle("加载音乐")
 
-		# 添加按钮，设置角色并接收返回值
-		folderButton = msgBox.addButton("文件夹", QMessageBox.ActionRole)
-		fileButton = msgBox.addButton("文件", QMessageBox.ActionRole)
-		cancelButton = msgBox.addButton("取消", QMessageBox.RejectRole)
+			# 添加按钮，设置角色并接收返回值
+			folderButton = msgBox.addButton("文件夹", QMessageBox.ActionRole)
+			fileButton = msgBox.addButton("文件", QMessageBox.ActionRole)
+			cancelButton = msgBox.addButton("取消", QMessageBox.RejectRole)
 
-		# 显示消息框
-		msgBox.exec_()
+			# 显示消息框
+			msgBox.exec_()
 
-		# 根据用户的选择执行操作
-		if msgBox.clickedButton() == folderButton:
-			# 用户选择加载文件夹
-			folder_path = QFileDialog.getExistingDirectory(self, "选择音乐文件夹")
-			if folder_path:
-				self.MusicList.load_songs_from_folder(folder_path, is_folder=True)
-		elif msgBox.clickedButton() == fileButton:
-			# 用户选择加载单个或多个文件
-			file_paths, _ = QFileDialog.getOpenFileNames(self, "选择音乐文件", "", "音乐文件 (*.mp3 *.wav *.flac)")
-			if file_paths:
-				self.MusicList.load_songs_from_folder(file_paths, is_folder=False)
-		# 如果点击了取消按钮，不需要执行任何操作，因为操作已经被取消了
-		# 无论加载文件夹还是单个文件，都执行搜索以更新UI显示
-		self.search_song(self.FilterMusic.text())
+			# 根据用户的选择执行操作
+			if msgBox.clickedButton() == folderButton:
+				# 用户选择加载文件夹
+				folder_path = QFileDialog.getExistingDirectory(self, "选择音乐文件夹")
+				if folder_path:
+					self.MusicList.load_songs_from_folder(folder_path, is_folder=True)
+			elif msgBox.clickedButton() == fileButton:
+				# 用户选择加载单个或多个文件
+				file_paths, _ = QFileDialog.getOpenFileNames(self, "选择音乐文件", "", "音乐文件 (*.mp3 *.wav *.flac)")
+				if file_paths:
+					self.MusicList.load_songs_from_folder(file_paths, is_folder=False)
+			# 如果点击了取消按钮，不需要执行任何操作，因为操作已经被取消了
+			# 无论加载文件夹还是单个文件，都执行搜索以更新UI显示
+			self.search_song(self.FilterMusic.text())
+		except Exception as e:
+			print('loadSongs', e)
 
 	# 当音乐列表更新时的处理逻辑
 	def on_music_list_updated(self, obj):
@@ -211,7 +240,7 @@ class MainPage(QWidget, Ui_form):
 		# 对行号进行排序并逆序，确保从最后一个开始删除
 		for row in sorted(selectedRows, reverse=True):
 			self.delete_song(row)
-		self.search_song()
+		self.search_song(self.FilterMusic.text())
 
 	def delete_song(self,currentRow=-1):
 		try:
@@ -417,7 +446,7 @@ class MainPage(QWidget, Ui_form):
 		self.music_player.setVolume(volume / 100)
 
 	# 搜索音乐逻辑
-	def search_song(self, search_text):
+	def search_song(self, search_text=""):
 		try:
 			self.filtered_song_indices.clear()
 

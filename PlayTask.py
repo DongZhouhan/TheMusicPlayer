@@ -101,6 +101,7 @@ class PlayTask(QObject):
         # 停止播放音乐
         try:
             pygame.mixer.music.stop()
+            pygame.quit()
             self.is_paused = False
             self.playbackStopped.emit()
         except Exception as e:

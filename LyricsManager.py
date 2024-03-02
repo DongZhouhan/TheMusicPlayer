@@ -22,6 +22,7 @@ class LyricsManager:
         if os.path.exists(lyrics_path):
             with open(lyrics_path, 'r', encoding='utf-8') as file:
                 lyrics_lines = file.readlines()
+                # print(lyrics_lines)
             return self.parse_lyrics(lyrics_lines)
         else:
             return [{'time': 0, 'text': "歌词不存在"}]
@@ -37,14 +38,15 @@ class LyricsManager:
         # time_pattern = re.compile(r'\[(\d{2}):(\d{2}\.\d{2})\](.*)')
         # 歌词元数据的正则表达式
         # metadata_pattern = re.compile(r'\[(\w+):(.*)\]')
-        time_pattern = re.compile(r'\[(\d{2}):(\d{2})\.(\d{2})\](.*)')
+        time_pattern = re.compile(r'\[(\d{2}):(\d{2})\.(\d{1,3})\](.*)')
         lyrics_data = []
         for line in lyrics_lines:
+	        # print(line)
             time_match = time_pattern.match(line)
             # metadata_match = metadata_pattern.match(line)
-
+	        # print(time_match)
             if time_match:
-                # 处理歌词行
+	            # 处理歌词行
                 minutes, seconds, millis, lyrics_text = time_match.groups()
                 # print(minutes, seconds, millis)
                 total_seconds = int(minutes) * 60 + int(seconds) + int(millis) / 100
