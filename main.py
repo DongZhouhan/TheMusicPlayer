@@ -5,7 +5,7 @@ import random
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QEvent, QTimer, Qt
+from PyQt5.QtCore import QEvent, QTimer
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QMenu, QMessageBox, QSystemTrayIcon, \
 	QTableWidgetItem, QWidget
@@ -459,19 +459,28 @@ class MainPage(QWidget, Ui_form):
 	def search_song(self, search_text=""):
 		try:
 			self.filtered_song_indices.clear()
-
 			self.tableWidget.setRowCount(0)
+			search_text = search_text.lower()  # 优化点：只调用一次lower()
+			matches = []
+
 			for index, song in enumerate(self.MusicList.songs):
-				if search_text.lower() in song.title.lower():
-					self.filtered_song_indices.append(index)
-					row_count = self.tableWidget.rowCount()
-					self.tableWidget.insertRow(row_count)
-					item=QTableWidgetItem(song.title)
-					item.setTextAlignment(Qt.AlignCenter)
-					self.tableWidget.setItem(row_count, 0, item)
-					item = QTableWidgetItem(song.artist)
-					item.setTextAlignment(Qt.AlignCenter)
-					self.tableWidget.setItem(row_count, 1, item)
+				# 优化点：减少lower()调用次数
+				title_lower = song.title.lower()
+				artist_lower = song.artist.lower()
+				if search_text in title_lower or search_text in artist_lower:
+					matches.append((index, search_text in title_lower))
+
+			matches.sort(key=lambda x: (not x[1], x[0]))
+
+			# 一次性更新UI，而不是在循环中更新
+			for match in matches:
+				index = match[0]
+				song = self.MusicList.songs[index]
+				self.filtered_song_indices.append(index)
+				row_count = self.tableWidget.rowCount()
+				self.tableWidget.insertRow(row_count)
+				self.tableWidget.setItem(row_count, 0, QTableWidgetItem(song.title))
+				self.tableWidget.setItem(row_count, 1, QTableWidgetItem(song.artist))
 		except Exception as e:
 			print('search_song', e)
 
