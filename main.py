@@ -93,7 +93,6 @@ class MainPage(QWidget, Ui_form):
 			self.index = data.get('index', -1)
 			self.start_position = data.get('current_pos', 0)
 			self.pre_path = data.get('pre_path', '')
-
 			self.MusicList.on_songs_loaded()
 
 			if self.PlayMode == 0:
@@ -210,6 +209,8 @@ class MainPage(QWidget, Ui_form):
 			# self.load_songs_to_table()
 			self.search_song(self.FilterMusic.text())
 			print(obj,self.index)
+			if not self.MusicList.songs:
+				return
 			if obj == 100 and self.index != -1:
 				# print(self.MusicList.songs[self.index])
 
@@ -266,8 +267,7 @@ class MainPage(QWidget, Ui_form):
 							self.play_song(self.MusicList.songs[nextRow])
 						else:
 							# 重置播放器UI等
-							# self.reset_player_ui()
-							pass
+							self.reset_player_ui()
 					else:
 						# 如果删除的不是当前播放的歌曲，直接删除即可
 						# print(len(self.MusicList.songs),len(self.filtered_song_indices),currentRow)
@@ -279,6 +279,15 @@ class MainPage(QWidget, Ui_form):
 
 		except Exception as e:
 			print('delete_song', e)
+
+	def reset_player_ui(self):
+		try:
+			self.music_player.stop_song()
+			self.MusicTitle.clear()
+			self.SongLyrics.clear()
+			self.SongProgressBar.setValue(0)
+		except Exception as e:
+			print('reset_player_ui', e)
 
 	def delete_music_list(self):
 		try:
@@ -324,10 +333,11 @@ class MainPage(QWidget, Ui_form):
 
 	# 播放选定音乐的逻辑
 	def play_song(self, song, start_position=0):
-		print(song.title, song.artist, song.path, start_position)
+
+		print(song.title, song.artist, song.path, start_position, song.bitrate)
 		try:
 			self.index = self.MusicList.songs.index(song)
-			self.MusicTitle.setText(f'{song.title} - {song.artist}')
+			self.MusicTitle.setText(f'{song.title} - {song.artist}\n{round(song.bitrate / 1000)}kbps')
 			self.lyrics_data = self.lyrics_manager.load_lyrics(song.path)
 			self.display_lyrics()
 			self.music_player.play_song(song.path, start_position)

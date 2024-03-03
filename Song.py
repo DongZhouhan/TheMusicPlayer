@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class Song:
-    def __init__(self, title='未知', path='', modification_time=0, artist='未知'):
+    def __init__(self, title='未知', path='', modification_time=0, artist='未知', bitrate=0):
         self.title = title
         self.path = path
         # 检查modification_time是否为整数或浮点数类型的时间戳
@@ -15,3 +15,5 @@ class Song:
             # 如果modification_time既不是整数/浮点数也不是字符串，或为了处理其他类型
             self.modification_time = "1970-01-01 00:00:00"  # 或其他合适的默认值
         self.artist = artist
+        # 比特率
+        self.bitrate = bitrate
