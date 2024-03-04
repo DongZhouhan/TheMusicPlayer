@@ -5,7 +5,8 @@ import random
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QEvent, QTimer
+from PyQt5.Qt import QWIDGETSIZE_MAX
+from PyQt5.QtCore import QEvent, QSize, QTimer
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHeaderView, QMenu, QMessageBox, QSystemTrayIcon, \
 	QTableWidgetItem, QWidget
@@ -32,7 +33,7 @@ class MainPage(QWidget, Ui_form):
 		self.index = -1
 		self.folder_path = ''
 		self.lyrics_data = []  # 存储歌词数据
-		self.init_data_flag=True
+		self.init_data_flag = True
 		self.user_is_interacting_with_lyrics = False  # 用户是否正在滑动歌词
 		# 初始化定时器
 		self.lyrics_scroll_timer = QTimer(self)
@@ -83,6 +84,7 @@ class MainPage(QWidget, Ui_form):
 		self.FindCurSong_btn.clicked.connect(self.highlight_playing_song)
 		# self.Additional_btn.clicked.connect(self.Additional_btn)
 		self.Additional_btn.clicked.connect(self.add_setting)
+		self.small_btn.clicked.connect(self.small_page)
 
 	# 初始化数据，如配置文件读取
 	def init_data(self):
@@ -208,7 +210,7 @@ class MainPage(QWidget, Ui_form):
 
 			# self.load_songs_to_table()
 			self.search_song(self.FilterMusic.text())
-			print(obj,self.index)
+			print(obj, self.index)
 			if not self.MusicList.songs:
 				return
 			if obj == 100 and self.index != -1:
@@ -216,11 +218,12 @@ class MainPage(QWidget, Ui_form):
 
 				print(self.pre_path, self.MusicList.songs[self.index].path)
 
-				if not self.init_data_flag or self.index>=len(self.MusicList.songs) or self.pre_path != self.MusicList.songs[self.index].path:
+				if not self.init_data_flag or self.index >= len(self.MusicList.songs) or self.pre_path != \
+						self.MusicList.songs[self.index].path:
 					self.index = -1
-					self.start_position=0
+					self.start_position = 0
 				else:
-					self.init_data_flag=False
+					self.init_data_flag = False
 					self.play_song(self.MusicList.songs[self.index], self.start_position)
 					self.music_player.pause_song()
 			elif obj == 100 and self.index == -1 and self.MusicList.songs:
@@ -243,7 +246,7 @@ class MainPage(QWidget, Ui_form):
 			self.delete_song(row)
 		self.search_song(self.FilterMusic.text())
 
-	def delete_song(self,currentRow=-1):
+	def delete_song(self, currentRow=-1):
 		try:
 			if currentRow == -1:
 				currentRow = self.tableWidget.currentRow()
@@ -274,8 +277,8 @@ class MainPage(QWidget, Ui_form):
 
 						self.MusicList.delete_song_by_path(songPath)  # 删除歌曲
 						self.tableWidget.removeRow(currentRow)
-						# self.MusicList.songs.pop(currentRow)  # 也从内存中的歌曲列表中删除
-						# print(len(self.MusicList.songs),len(self.filtered_song_indices))
+				# self.MusicList.songs.pop(currentRow)  # 也从内存中的歌曲列表中删除
+				# print(len(self.MusicList.songs),len(self.filtered_song_indices))
 
 		except Exception as e:
 			print('delete_song', e)
@@ -507,7 +510,7 @@ class MainPage(QWidget, Ui_form):
 			'PlayMode': self.PlayMode,
 			'index': self.index,
 			'current_pos': self.get_current_pos(),
-			'pre_path':self.MusicList.songs[self.index].path
+			'pre_path': self.MusicList.songs[self.index].path
 		}
 		if self.folder_path:
 			data['folder_path'] = self.folder_path
@@ -558,7 +561,38 @@ class MainPage(QWidget, Ui_form):
 	def get_current_pos(self):
 		return self.music_player.get_current_pos()
 
+	def small_page(self):
+		"""
+		将页面布局调整为小尺寸模式的函数。
+		"""
+		try:
+			width = self.size().width()
+			height = self.size().height()
+			if self.tableWidget.isVisible():
+				# self.resize(200, 450)  # 调整窗口大小以适应新的布局
+				self.setMinimumSize(0, 0)
+				self.setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX))
+				self.resize(250, 450)
+			else:
+				self.resize(width, height)
+			self.toggle_layout_visibility(self.verticalLayout)  # 调用函数以切换垂直布局的可见性
 
+		except Exception as e:
+			print('small_page', e)
+
+	def toggle_layout_visibility(self, layout):
+		"""
+		切换布局中所有部件的可见性的递归函数。
+
+		参数:
+			layout (QLayout): 需要切换可见性的布局。
+		"""
+		for i in range(layout.count()):  # 遍历布局中的每一个部件
+			item = layout.itemAt(i)  # 获取布局中的第i个部件
+			if item.widget():  # 如果部件是一个QWidget部件
+				item.widget().setVisible(not item.widget().isVisible())  # 切换部件的可见性
+			elif item.layout():  # 如果部件是一个布局
+				self.toggle_layout_visibility(item.layout())  # 递归调用本函数以切换内部布局中部件的可见性
 
 	# 改变音乐播放模式逻辑
 	def change_MusicMode(self):

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1164</width>
-    <height>666</height>
+       <width>783</width>
+       <height>531</height>
    </rect>
   </property>
   <property name="font">
@@ -92,7 +92,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,0,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="5,5,2,2">
        <property name="bottomMargin">
         <number>0</number>
        </property>
@@ -146,6 +146,16 @@
            <string>歌手</string>
           </property>
          </item>
+        </widget>
+       </item>
+             <item>
+                 <widget class="QPushButton" name="FindCurSong_btn">
+                     <property name="focusPolicy">
+                         <enum>Qt::NoFocus</enum>
+                     </property>
+                     <property name="text">
+                         <string>定位</string>
+                     </property>
         </widget>
        </item>
       </layout>
@@ -245,6 +255,27 @@
          </property>
         </widget>
        </item>
+          <item>
+              <widget class="QPushButton" name="small_btn">
+                  <property name="maximumSize">
+                      <size>
+                          <width>30</width>
+                          <height>16777215</height>
+                      </size>
+                  </property>
+                  <property name="font">
+                      <font>
+                          <pointsize>12</pointsize>
+                      </font>
+                  </property>
+                  <property name="focusPolicy">
+                      <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="text">
+                      <string>&lt;-</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -278,7 +309,7 @@
         <widget class="QLabel" name="current_pos">
          <property name="minimumSize">
           <size>
-           <width>75</width>
+              <width>0</width>
            <height>0</height>
           </size>
          </property>
@@ -307,7 +338,7 @@
         <widget class="QLabel" name="total_length">
          <property name="minimumSize">
           <size>
-           <width>75</width>
+              <width>0</width>
            <height>0</height>
           </size>
          </property>
@@ -398,6 +429,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="MusicMode_btn">
+            <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+            </property>
          <property name="text">
           <string>随机</string>
          </property>
